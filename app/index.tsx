@@ -1,77 +1,50 @@
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
+
+import { PetHeader } from "../components/PetHeader";
+import { PetPicker } from "../components/PetPicker";
+import { styles } from "../styles/homeStyles";
 
 export default function Index() {
+  const { pet } = useLocalSearchParams<{ pet?: string }>();
+  const pets = [
+    {
+      id: "craggle",
+      name: "Craggle",
+      vibe: "Bouldering beast",
+      tint: "#C66B3D",
+    },
+    { id: "stride", name: "Stride", vibe: "Endless walker", tint: "#2F5233" },
+    { id: "dash", name: "Dash", vibe: "Night runner", tint: "#2C5F7A" },
+  ];
+  const selectedPet = pets.find((item) => item.id === pet);
+
+  if (!selectedPet) {
+    return (
+      <View style={styles.screen}>
+        <View style={styles.content}>
+          <Text style={styles.title}>Pick your pet</Text>
+          <Text style={styles.subtitle}>
+            Each one thrives on a different kind of movement.
+          </Text>
+          <PetPicker
+            pets={pets}
+            onSelect={(id) => router.push(`/?pet=${id}`)}
+          />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.screen}>
       <View style={styles.content}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.kicker}>DAILY CREATURE</Text>
-            <Text style={styles.title}>Craggle is hungry</Text>
-            <Text style={styles.subtitle}>
-              Keep your streak alive by moving every day.
-            </Text>
-          </View>
-          <View style={styles.levelBadge}>
-            <Text style={styles.levelLabel}>LVL</Text>
-            <Text style={styles.levelValue}>7</Text>
-          </View>
-        </View>
+        <PetHeader petName={selectedPet.name} />
+
+        <Pressable onPress={() => router.replace("/")} style={styles.resetPet}>
+          <Text style={styles.resetPetText}>Change pet</Text>
+        </Pressable>
       </View>
     </View>
   );
 }
-
-const styles = {
-  screen: {
-    flex: 1,
-    backgroundColor: "#F3E9D2",
-  },
-  content: {
-    padding: 24,
-    paddingTop: 70,
-    paddingBottom: 48,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: 16,
-  },
-  kicker: {
-    fontFamily: "Courier New",
-    fontSize: 12,
-    letterSpacing: 2,
-    color: "#76553B",
-  },
-  title: {
-    fontFamily: "Georgia",
-    fontSize: 30,
-    color: "#3C2A1E",
-  },
-  subtitle: {
-    fontFamily: "Avenir",
-    fontSize: 14,
-    color: "#5C4433",
-    marginTop: 6,
-    maxWidth: 220,
-  },
-  levelBadge: {
-    backgroundColor: "#3C2A1E",
-    borderRadius: 18,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    alignItems: "center",
-  },
-  levelLabel: {
-    fontFamily: "Courier New",
-    fontSize: 10,
-    color: "#F3E9D2",
-    letterSpacing: 1,
-  },
-  levelValue: {
-    fontFamily: "Georgia",
-    fontSize: 18,
-    color: "#F3E9D2",
-  },
-} as const;
